@@ -1,0 +1,524 @@
+/*
+ * Portada — composición fiél al diseño de Photoshop de 1920 × 1080 (HOJA 1.jpg).
+ *
+ * Estrategia: lienzo de referencia con proporción 16:9 que se ajusta al viewport
+ * ("fit contain"). Todas las posiciones y dimensiones se expresan en porcentaje
+ * de ese lienzo, de modo que al escalar se conservan exactamente las
+ * superposiciones y jerarquías del diseño original.
+ */
+
+:root {
+  --bg: #0b0b0b;        /* FONDO.png: rgb(11,11,11) */
+  --cream: #f5f2ea;
+  --yellow: #fee832;
+  --app-rest: 0.7;
+  /*
+   * Sistema de escala: toda la composición vive en el lienzo 1920 × 1080
+   * centrado en el viewport. --s es 1 px de referencia y todos los
+   * elementos se posiciones con coordenadas del lienzo × --s, de modo
+   * que el grupo queda centrado con márgenes iguales a los lados.
+   */
+  --s: min(calc(100svh / 1080), calc(100vw / 1920));
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--cream);
+  /* El documento crece con las secciones: se recorta solo el desborde
+     horizontal (la portada nunca sobresale a los costados). */
+  overflow-x: hidden;
+}
+
+/* ---------- Lienzo de referencia escalado ---------- */
+
+.stage {
+  position: relative;
+  width: min(100vw, calc(100svh * 16 / 9));
+  height: min(100svh, calc(100vw * 9 / 16));
+  container-type: size;
+  /* La capa perimetral debe poder extenderse más allá del lienzo;
+     el recorte lo hace el viewport (body overflow: hidden). */
+  overflow: visible;
+  background: var(--bg);
+  /* Al existir una segunda sección debajo, el lienzo queda centrado
+     en su propio bloque (las mismas alturas antes las resolvía el centrado de body). */
+  margin-inline: auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Elementos gráficos (PNG originales) ---------- */
+
+.art {
+  display: block;
+  user-select: none;
+}
+
+/* Carpeta amarilla con etiquetas — detrás de todo el contenido tipográfico. */
+.art--folder {
+  position: absolute;
+  z-index: 1;
+}
+
+/* Identidad izquierda: Nano Díaz® / Selected Work.
+   Anclada al lienzo (no al viewport) para mantener la línea de sangría
+   compartida con el título «Portafolio» en cualquier ancho de pantalla. */
+.art--identity {
+  position: absolute;
+  z-index: 2;
+  left: calc(75 * var(--s));
+  top: calc(501 * var(--s));
+  width: calc(265 * var(--s));
+  height: calc(76 * var(--s));
+}
+
+/* Título gigante: superpone a la carpeta. */
+.art--title {
+  position: absolute;
+  z-index: 3;
+}
+
+/* ---------- Franja superior de contactos ---------- */
+
+.topbar__link {
+  position: absolute;
+  z-index: 4;
+  display: block;
+}
+
+/*
+ * Franja superior de contactos: todo el grupo está anclado al lienzo
+ * (igual que la carpeta, el título y la identidad), de modo que la
+ * composición queda centrada con márgenes laterales exactamente
+ * iguales en cualquier viewport, reproduciendo las coordenadas
+ * 74 / 611 / 1034 / 1681 de Photoshop.
+ */
+.contact--correo {
+  left: calc(74 * var(--s));
+  top: calc(54 * var(--s));
+  width: calc(211 * var(--s));
+  height: calc(19 * var(--s));
+}
+
+.contact--instagram {
+  left: calc(611 * var(--s));
+  top: calc(55 * var(--s));
+  width: calc(97 * var(--s));
+  height: calc(16 * var(--s));
+}
+
+.contact--behance {
+  left: calc(1034 * var(--s));
+  top: calc(53 * var(--s));
+  width: calc(322 * var(--s));
+  height: calc(21 * var(--s));
+}
+
+.contact--whatsapp {
+  left: calc(1681 * var(--s));
+  top: calc(53 * var(--s));
+  width: calc(164 * var(--s));
+  height: calc(20 * var(--s));
+}
+
+.topbar__link:hover {
+  opacity: 0.85;
+}
+
+.topbar__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+}
+
+/* ---------- Año y versión (esquina inferior derecha) ---------- */
+
+.meta {
+  position: absolute;
+  right: calc(74 * var(--s));
+  bottom: 4.63%;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1.2cqh;
+}
+
+/* 19 px sobre el lienzo de 1080 = 1.7593% */
+.meta__update {
+  color: var(--cream);
+  font-size: 1.7593cqh;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+.meta__year {
+  display: flex;
+  margin: 0;
+  color: var(--yellow);
+  font-family: 'Bodoni Moda', Didot, 'Times New Roman', serif;
+  font-size: 2.35cqw;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.meta__year span {
+  display: grid;
+  place-items: center;
+  width: 3.05cqw;
+  aspect-ratio: 1;
+  border: 0.1cqw solid var(--yellow);
+  border-radius: 50%;
+}
+
+.meta__year span + span {
+  margin-left: -0.28cqw;
+}
+
+/* =============================================================
+   Segunda sección — franja amarilla editorial (recursos «Hoja 2»)
+   =============================================================
+ *
+ * Referencia: banda de 1920 × 160 px (la del editor visual).
+ * Escala ÚNICA de la franja: --marquee-k (0.65 = 35 % más chica que la
+ * referencia). --u es «1 px de referencia ya reducido» y TODO (alto de la
+ * banda, texto, flechas, logo, huecos y desplazamientos guardados en el
+ * editor) se expresa como «px de referencia × var(--u)». Para cambiar el
+ * tamaño de la franja se toca solo --marquee-k.
+ */
+
+.marquee {
+  --marquee-k: 0.65;
+  --u: calc(var(--s) * var(--marquee-k));
+  position: relative;
+  width: 100%;
+  height: calc(160 * var(--u));   /* el alto real lo fija Marquee.tsx desde el editor */
+  overflow: hidden;
+  background: #fff234;   /* Relleno de color 1.png */
+}
+
+.marquee__track {
+  display: flex;
+  align-items: center;      /* centrado vertical de todas las piezas */
+  width: max-content;
+  height: 100%;
+  /* El hueco uniforme dentro y entre grupos garantiza el empalme sin saltos. */
+  gap: calc(92 * var(--u));
+  animation: marquee-move 43s linear infinite;
+  will-change: transform;
+}
+
+.marquee__group {
+  display: flex;
+  align-items: center;
+  flex: none;
+  height: 100%;
+  gap: calc(92 * var(--u));
+}
+
+/* Hueco en el flujo (medidas en línea, desde el modelo del editor). */
+.marquee__item {
+  position: relative;
+  display: block;
+  flex: none;
+}
+
+/* Caja con la posición/tamaño guardados: centrada en el hueco; recibe el cursor. */
+.marquee__frame {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  display: block;
+}
+
+.marquee__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  /* Movimiento al pasar el cursor (valores en px de referencia). */
+  --hv-x: 0;
+  --hv-y: -3;
+  --hv-r: 1deg;
+  --hv-s: 1.05;
+}
+
+.marquee__art--texto,
+.marquee__art--flecha {
+  /* Tinta asentada: micro-desplazamiento estático del trazo. */
+  filter: url(#ink-settle);
+}
+
+.marquee__art--flecha {
+  --hv-x: 4;     /* la flecha avanza un poco en su dirección */
+  --hv-y: 0;
+  --hv-r: 0deg;
+  --hv-s: 1.08;
+}
+
+.marquee__art--logo {
+  --hv-r: -3deg;
+  --hv-s: 1.06;
+}
+
+/* Solo dispositivos con cursor y sin «reducir movimiento». */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .marquee__art {
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .marquee__frame:hover > .marquee__art {
+    transform: translate(calc(var(--hv-x) * var(--u)), calc(var(--hv-y) * var(--u)))
+      rotate(var(--hv-r)) scale(var(--hv-s));
+  }
+}
+
+/* Desplazamiento de izquierda a derecha: el track entra desde -50 %
+   (antes fuera del viewport) y al terminar la copia B ocupa exactamente la
+   posición inicial de la copia A → bucle sin salto. */
+@keyframes marquee-move {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Grano de papel/tinta casi imperceptible, mezclado en multiplicar. */
+.marquee::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+  animation: ink-drift 36s linear infinite;
+}
+
+@keyframes ink-drift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 220px 110px;
+  }
+}
+
+.marquee__defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* Movimiento reducido: franja estática y grano fijo. */
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track,
+  .marquee::after {
+    animation: none;
+  }
+}
+
+/* ---------- Sección 3: presentación en lienzo 16:9 ---------- */
+.section-three {
+  position: relative;
+  width: 100%;
+  height: calc(1080 * var(--s));
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.section-three__canvas {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: calc(1920 * var(--s));
+  height: calc(1080 * var(--s));
+  transform: translateX(-50%);
+  overflow: hidden;
+  container-type: size;
+}
+
+.section-three__background,
+.section-three__layer {
+  position: absolute;
+  display: block;
+  object-fit: fill;
+  user-select: none;
+  pointer-events: none;
+}
+
+.section-three__background {
+  display: none;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.section-three__layer {
+  height: auto;
+}
+
+/* Formato panorámico: en 2048×974 el lienzo llena el ancho conservando
+   sus proporciones; en ultrapanorámico se mantiene completo y la cuadrícula
+   continúa por los laterales. */
+@media (min-aspect-ratio: 1.9 / 1) {
+  .section-three {
+    width: 100vw;
+    height: 100svh;
+    margin-left: calc(50% - 50vw);
+    background-color: #003d28;
+    background-image: none;
+  }
+
+  .section-three__canvas {
+    --wide-scale: max(calc(100vw / 1920), calc(100svh / 1080));
+    top: calc(50% - 51px);
+    width: calc(1920 * var(--wide-scale));
+    height: calc(1080 * var(--wide-scale));
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (min-aspect-ratio: 2.2 / 1) {
+  .section-three {
+    background-image: url('/assets/hoja3/fondo.png');
+    background-position: center;
+    background-repeat: repeat-x;
+    background-size: auto 100%;
+  }
+  .section-three__canvas {
+    top: 50%;
+    width: calc(1920 * var(--s));
+    height: calc(1080 * var(--s));
+  }
+}
+/* ---------- Sección 3: movimiento al pasar el cursor + etiquetas de apps ---------- */
+
+/* Las capas interactivas reciben el cursor; fondo, panel y texto siguen sin interacción. */
+.section-three__item {
+  pointer-events: auto;
+}
+
+.section-three__art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  user-select: none;
+}
+
+/* Iconos de aplicaciones: la caja se reduce (también su área sensible). */
+.section-three__item--app {
+  scale: var(--app-rest);
+  border-radius: calc(24 * var(--s));
+}
+
+.section-three__item--app:focus-visible {
+  outline: calc(3 * var(--s)) solid rgba(255, 255, 255, 0.9);
+  outline-offset: calc(2 * var(--s));
+}
+
+/* Etiqueta flotante estilo macOS. */
+.section-three__tip {
+  position: absolute;
+  z-index: 100;
+  pointer-events: none;
+  padding: 0.38em 0.8em;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 0.65em;
+  background: rgba(40, 40, 42, 0.92);
+  color: #fff;
+  font-size: max(12px, calc(15 * var(--s)));
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28), inset 0 0.5px 0 rgba(255, 255, 255, 0.28);
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, calc(-100% + 4 * var(--s)));
+  transition: opacity 0.18s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.25s;
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .section-three__tip {
+    background: rgba(40, 40, 42, 0.58);
+    -webkit-backdrop-filter: blur(14px) saturate(1.8);
+    backdrop-filter: blur(14px) saturate(1.8);
+  }
+}
+
+.section-three__item--app:hover + .section-three__tip,
+.section-three__item--app:focus-visible + .section-three__tip {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, calc(-100% - 6 * var(--s)));
+  transition-delay: 0s;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .section-three__art {
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .section-three__item:hover > .section-three__art {
+    transform: translateY(calc(-4 * var(--s))) rotate(calc(var(--tilt, 1) * 1.2deg)) scale(1.04);
+  }
+
+  .section-three__item--app:hover > .section-three__art {
+    transform: translateY(calc(-6 * var(--s))) rotate(calc(var(--tilt, 1) * 1.2deg)) scale(1.1);
+  }
+}
+
+/* Foco de teclado: mismo gesto que el hover (salvo con movimiento reducido). */
+@media (prefers-reduced-motion: no-preference) {
+  .section-three__item--app:focus-visible > .section-three__art {
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(calc(-6 * var(--s))) scale(1.1);
+  }
+}
+
+/* Movimiento reducido: la etiqueta aparece sin animación y nada se desplaza. */
+@media (prefers-reduced-motion: reduce) {
+  .section-three__tip,
+  .section-three__item--app:hover + .section-three__tip,
+  .section-three__item--app:focus-visible + .section-three__tip {
+    transition: none;
+  }
+}
